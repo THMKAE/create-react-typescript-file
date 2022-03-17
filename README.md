@@ -4,4 +4,12 @@
 
 Side-project, loosely based on the excellent work of Josh Comeau's [new-component](https://github.com/joshwcomeau/new-component)
 
+## Usage
+
+#### Installation
+
+```
+yarn global add create-react-typescript-file
+```
+
 🚧 Under Construction 🚧

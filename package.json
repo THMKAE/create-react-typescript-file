@@ -1,0 +1,27 @@
+{
+  "name": "create-react-typescript-file",
+  "version": "0.0.1",
+  "description": "CLI tool to quickly create React Typescript files",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "ctf": "./lib/index.js"
+  },
+  "author": "THMKAE <themanknownasedd@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^9.0.0",
+    "inquirer": "^8.2.1",
+    "prettier": "^2.5.1"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^8.2.0",
+    "@types/node": "^17.0.21",
+    "@types/prettier": "^2.4.4",
+    "@types/yargs": "^17.0.9",
+    "typescript": "^4.6.2"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "target": "es5",
+    "outDir": "lib",
+    "rootDir": "src",
+    "importHelpers": false,
+    "resolveJsonModule": true
+  }
+}

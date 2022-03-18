@@ -38,7 +38,11 @@ type Dirs = {
   dirs: { [key in FolderNames]: string };
 };
 
-export type Config = { root: string } & Dirs;
+export type Config = {
+  root: string;
+  addIndexFileToRootFolders?: boolean;
+  addCSSModulesToComponent?: boolean;
+} & Dirs;
 
 export const defaultConfig: Config = {
   root: 'src',
@@ -73,7 +77,8 @@ export const createQuestions = (config: Config): QuestionCollection => [
     name: 'addCssModule',
     message: 'Want to add a (CSS modules) style file?',
     choices: [Confirm.YES, Confirm.NO],
-    when: (answers: Answers) => answers.typeOfFile === TypeOfFile.COMPONENT,
+    when: (answers: Answers) =>
+      answers.typeOfFile === TypeOfFile.COMPONENT && config.addCSSModulesToComponent === undefined,
   },
   {
     type: 'input',
@@ -96,7 +101,7 @@ export const createQuestions = (config: Config): QuestionCollection => [
   },
 ];
 
-export const initQuestions: QuestionCollection = [
+export const initQuestions = (config: Config): QuestionCollection => [
   {
     type: 'checkbox',
     name: 'folders',
@@ -115,6 +120,7 @@ export const initQuestions: QuestionCollection = [
     name: 'createIndexFiles',
     message: 'Do you want to create index files per folder?',
     choices: [Confirm.YES, Confirm.NO],
+    when: () => config.addIndexFileToRootFolders === undefined,
   },
 ];
 

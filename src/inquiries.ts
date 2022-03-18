@@ -21,7 +21,8 @@ import { entryTemplates } from './templates';
 import { pathResolver, doesPathExist, createDirectory, createFile, log } from './utils';
 
 export const createInquiry = () => {
-  inquirer.prompt(createQuestions(getConfig())).then((answers: Answers) => {
+  const config = getConfig();
+  inquirer.prompt(createQuestions(config)).then((answers: Answers) => {
     const { typeOfFile, fileName, fileDir, addCssModule } = answers;
     const { parentDir, componentDir, indexPath, filePath } = generatePathValues(
       fileDir,
@@ -33,7 +34,14 @@ export const createInquiry = () => {
       reviewParentDir(parentDir);
       reviewComponentDir(componentDir, typeOfFile);
       createComponentDirectory(componentDir, typeOfFile);
-      createComponentFiles(fileName, indexPath, filePath, typeOfFile, addCssModule, componentDir);
+      createComponentFiles(
+        fileName,
+        indexPath,
+        filePath,
+        typeOfFile,
+        config.addCSSModulesToComponent || addCssModule,
+        componentDir
+      );
     } catch (error) {
       log.e(`❌ ${error}`);
     } finally {
@@ -43,16 +51,16 @@ export const createInquiry = () => {
 };
 
 export const initInquiry = () => {
-  inquirer.prompt(initQuestions).then((answers: Answers) => {
+  const config = getConfig();
+  inquirer.prompt(initQuestions(config)).then((answers: Answers) => {
     try {
       const { folders, createIndexFiles } = answers;
-      const config = getConfig();
 
       (folders as Array<FolderNames>).forEach((folder) => {
         const folderPath = pathResolver(config.root, config.dirs[folder]);
         if (!doesPathExist(folderPath)) {
           createDirectory(folderPath);
-          if (createIndexFiles === Confirm.YES) {
+          if (config.addIndexFileToRootFolders || createIndexFiles === Confirm.YES) {
             createFile(generateIndexPath(folderPath), entryTemplates.index, 'index.ts');
             console.info('\n');
           }

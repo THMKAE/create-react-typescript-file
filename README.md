@@ -40,6 +40,20 @@ By running this action, the tool will create a `.ctf-config.json` file with all 
 
 ![configuration file inquiry](./media/inquiry_setup.png)
 
+```json
+{
+  "root": "src" /* root application directory, usually "src" when using create-react-app */,
+  "dirs": {
+    "components": "components",
+    "hooks": "hooks",
+    "adapters": "adapters",
+    "config": "config",
+    "pages": "pages",
+    "helpers": "helpers"
+  }
+}
+```
+
 After this setup, the tool will load up this configuration to get the needed default values per action.
 
 #### Initialize (root) folder structure
@@ -58,6 +72,8 @@ This action will quickly setup an entire folder structure for the core parts of 
 All of these will be added to the root folder you entered in the configuration action. You can choose to opt out of any of these.
 
 If you've chosen to add an index file per folder, it'll create one within each of those folder with a simple `export {}` that you can update later.
+
+If you'd like to skip the "index file" question, you can add `"addIndexFileToRootFolders": true,` to the configuration file.
 
 #### Create files
 
@@ -90,6 +106,8 @@ And an empty CSS modules file
 ```typescript
 // components/Button/button.module.css
 ```
+
+If you'd like to skip the "CSS modules" question, you can add `"addCSSModulesToComponent": true,` to the configuration file.
 
 Creating a hook will give you similar behavior, except that it will not create an index file, but will only create the following:
 

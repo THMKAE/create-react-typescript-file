@@ -1,4 +1,3 @@
-import path from 'path';
 import prettier from 'prettier';
 import { Config, prettierConfig, TypeOfFile, defaultConfig } from './config';
 import { componentTemplates } from './templates';
@@ -6,7 +5,7 @@ import { createDirectory, createFile, doesPathExist, log, pathResolver } from '.
 
 export const getConfig = (): Config => {
   try {
-    const projectConfig = require(path.resolve(process.cwd(), '.ctf-config.json'));
+    const projectConfig = require(pathResolver(process.cwd(), '.ctf-config.json'));
     log.i('\n🛠  Using local project configuration\n');
     return {
       ...defaultConfig,
@@ -17,6 +16,28 @@ export const getConfig = (): Config => {
     log.i('\n🛠  Using default configuration\n');
     return defaultConfig;
   }
+};
+
+const getPrettierConfig = () => {
+  try {
+    const projectConfig: prettier.Options = require(pathResolver(
+      process.cwd(),
+      '.prettierrc.json'
+    ));
+    log.i('\n🛠  Using local prettier configuration\n');
+    return {
+      ...prettierConfig,
+      ...projectConfig,
+    };
+  } catch (error) {
+    log.i('\n🛠  Using default prettier configuration\n');
+    return prettierConfig;
+  }
+};
+
+export const buildPrettier = (json?: boolean) => {
+  const config: prettier.Options = getPrettierConfig();
+  return (text: string) => prettier.format(text, json ? { ...config, parser: 'json' } : config);
 };
 
 export const reviewParentDir = (parentDir: string) => {
@@ -49,11 +70,6 @@ export const generatePathValues = (dir: string, name: string, typeOfFile: TypeOf
     filePath,
     indexPath,
   };
-};
-
-export const buildPrettier = (json?: boolean) => {
-  return (text: string) =>
-    prettier.format(text, json ? { ...prettierConfig, parser: 'json' } : prettierConfig);
 };
 
 export const createComponentDirectory = (componentDir: string, typeOfFile: TypeOfFile) => {

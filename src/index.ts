@@ -5,6 +5,7 @@ import inquirer, { Answers } from 'inquirer';
 // @ts-ignore
 import { version } from '../package.json';
 import { entryQuestions, TypeOfAction } from './config';
+import { getConfig } from './helpers';
 import { createInquiry, initInquiry, setupInquiry } from './inquiries';
 
 const program = new Command();
@@ -15,15 +16,16 @@ program
   .action(() => {
     inquirer.prompt(entryQuestions).then((answers: Answers) => {
       const { action } = answers;
+      const config = getConfig();
 
       if (action === TypeOfAction.SETUP) {
-        setupInquiry();
+        setupInquiry(config);
       }
       if (action === TypeOfAction.INIT) {
-        initInquiry();
+        initInquiry(config);
       }
       if (action === TypeOfAction.CREATE) {
-        createInquiry();
+        createInquiry(config);
       }
     });
   });

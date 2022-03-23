@@ -10,7 +10,7 @@ Side-project, loosely based on the excellent work of Josh Comeau's [new-componen
 
 ### Installation
 
-```
+```bash
 # Yarn:
 yarn global add create-react-typescript-file
 
@@ -22,7 +22,7 @@ npm i -g create-react-typescript-file
 
 Navigate into your project's directory and run:
 
-```
+```bash
 ctf
 ```
 

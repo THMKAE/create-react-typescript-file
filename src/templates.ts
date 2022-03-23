@@ -1,5 +1,7 @@
 export const componentTemplates = (name: string) => ({
-  index: `export { default } from './${name}'`,
+  index: `export { default } from './${name}';`,
+
+  parentIndex: `export { default as ${name} } from './${name}';`,
 
   component: `
         import React from 'react';

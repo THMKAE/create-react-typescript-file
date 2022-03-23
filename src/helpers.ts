@@ -1,19 +1,26 @@
 import prettier from 'prettier';
 import { Config, prettierConfig, TypeOfFile, defaultConfig } from './config';
-import { componentTemplates } from './templates';
-import { createDirectory, createFile, doesPathExist, log, pathResolver } from './utils';
+import { entryTemplates, componentTemplates } from './templates';
+import {
+  createDirectory,
+  createFile,
+  doesPathExist,
+  getDirectoryFiles,
+  log,
+  pathResolver,
+  readFile,
+  updateFile,
+} from './utils';
 
 export const getConfig = (): Config => {
   try {
     const projectConfig = require(pathResolver(process.cwd(), '.ctf-config.json'));
-    log.i('\n🛠  Using local project configuration\n');
     return {
       ...defaultConfig,
       ...projectConfig,
       ...{ dirs: { ...defaultConfig.dirs, ...projectConfig.dirs } },
     };
   } catch (error) {
-    log.i('\n🛠  Using default configuration\n');
     return defaultConfig;
   }
 };
@@ -24,32 +31,33 @@ const getPrettierConfig = () => {
       process.cwd(),
       '.prettierrc.json'
     ));
-    log.i('\n🛠  Using local prettier configuration\n');
+    log('🛠  Using local prettier configuration');
     return {
       ...prettierConfig,
       ...projectConfig,
     };
   } catch (error) {
-    log.i('\n🛠  Using default prettier configuration\n');
+    log('🛠  Using default prettier configuration');
     return prettierConfig;
   }
 };
 
-export const buildPrettier = (json?: boolean) => {
+export const buildPrettier = () => {
   const config: prettier.Options = getPrettierConfig();
-  return (text: string) => prettier.format(text, json ? { ...config, parser: 'json' } : config);
+  return (text: string, json?: boolean) =>
+    prettier.format(text, json ? { ...config, parser: 'json' } : config);
 };
 
 export const reviewParentDir = (parentDir: string) => {
   if (!doesPathExist(parentDir)) {
-    log.e(`\n❌ The directory you specified does not exist. (at path ${parentDir})`, true);
+    throw new Error(`\n❌ The directory you specified does not exist. (at path ${parentDir})`);
   }
 };
 
 export const reviewComponentDir = (componentDir: string, typeOfFile: TypeOfFile) => {
   if (typeOfFile === TypeOfFile.COMPONENT) {
     if (doesPathExist(componentDir)) {
-      log.e(`\n❌ The file you specified already exist. (at path ${componentDir})`, true);
+      throw new Error(`\n❌ The file you specified already exist. (at path ${componentDir})`);
     }
   }
 };
@@ -73,7 +81,6 @@ export const generatePathValues = (dir: string, name: string, typeOfFile: TypeOf
 };
 
 export const createComponentDirectory = (componentDir: string, typeOfFile: TypeOfFile) => {
-  log.i('\n');
   if (typeOfFile === TypeOfFile.COMPONENT) {
     createDirectory(componentDir);
   }
@@ -94,9 +101,9 @@ export const createComponentFiles = (
   filePath: string,
   typeOfFile: TypeOfFile,
   addCssModuleStyling: boolean,
-  componentDir: string
+  componentDir: string,
+  prettify: ReturnType<typeof buildPrettier>
 ) => {
-  const prettify = buildPrettier();
   const { index, component, componentWithCSSModules, hook } = componentTemplates(fileName);
 
   switch (typeOfFile) {
@@ -120,5 +127,29 @@ export const createComponentFiles = (
       break;
   }
 
-  log.i(`\n🎉 All done! Navigate to ${filePath} and start editing! 🎉`);
+  log(`\n🎉 All done! Navigate to ${filePath} and start editing! 🎉`);
+};
+
+export const addToParentIndex = (
+  parentDir: string,
+  fileName: string,
+  prettify: ReturnType<typeof buildPrettier>
+) => {
+  const files = getDirectoryFiles(parentDir);
+  if (files?.includes('index.ts')) {
+    const indexPath = pathResolver(parentDir, 'index.ts');
+    const fileContent = readFile(indexPath);
+    if (fileContent) {
+      const { parentIndex } = componentTemplates(fileName);
+      if (fileContent.includes(entryTemplates.index) && fileContent.length <= 11) {
+        updateFile(indexPath, parentIndex, fileName);
+      } else {
+        const updatedContent = fileContent.endsWith('\n')
+          ? `${fileContent.slice(0, -1)}\n${parentIndex}`
+          : `${fileContent}\n${parentIndex}`;
+        updateFile(indexPath, prettify(updatedContent), fileName);
+      }
+    }
+    log('✅ Added import to parent index file');
+  }
 };

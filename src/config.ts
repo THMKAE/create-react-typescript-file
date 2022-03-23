@@ -32,6 +32,7 @@ export enum FolderNames {
   HELPERS = 'helpers',
   HOOKS = 'hooks',
   PAGES = 'pages',
+  TYPES = 'types',
 }
 
 type Dirs = {
@@ -47,12 +48,13 @@ export type Config = {
 export const defaultConfig: Config = {
   root: 'src',
   dirs: {
-    components: 'components',
-    hooks: 'hooks',
-    adapters: 'adapters',
-    config: 'config',
-    pages: 'pages',
-    helpers: 'helpers',
+    components: FolderNames.COMPONENTS,
+    hooks: FolderNames.HOOKS,
+    adapters: FolderNames.ADAPTERS,
+    config: FolderNames.CONFIG,
+    pages: FolderNames.PAGES,
+    helpers: FolderNames.HELPERS,
+    types: FolderNames.TYPES,
   },
 };
 

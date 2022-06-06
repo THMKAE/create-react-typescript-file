@@ -32,25 +32,25 @@ The tool will give you 3 actions:
 - Initialize (root) folder structure
 - Set up CTF configuration file
 
-![3 actions](./media/inquiry.png)
-
 #### Set up CTF configuration file
 
-By running this action, the tool will create a `.ctf-config.json` file with all defaults and the root you entered.
-
-![configuration file inquiry](./media/inquiry_setup.png)
+By running this action, the tool will create a `.ctf-config.json` file with all defaults and the root you entered. It will ask you for the root folder name and which styling framework you want to use.
+Currently it "supports" CSS Modules, Styled Components and Vanilla-Extract. But it doesn't really add import statements to those files, so they are easily adoptable with other frameworks.
 
 ```json
 {
-  "root": "src" /* root application directory, usually "src" when using create-react-app */,
+  "root": "src",
   "dirs": {
     "components": "components",
     "hooks": "hooks",
     "adapters": "adapters",
     "config": "config",
     "pages": "pages",
-    "helpers": "helpers"
-  }
+    "helpers": "helpers",
+    "types": "types"
+  },
+  "stylingType": "styled-components",
+  "addStylingFileToComponent": true
 }
 ```
 
@@ -67,20 +67,17 @@ This action will quickly setup an entire folder structure for the core parts of 
 - helpers
 - pages
 
-![initialize folders inquiry](./media/inquiry_init.png)
-
 All of these will be added to the root folder you entered in the configuration action. You can choose to opt out of any of these.
 
-If you've chosen to add an index file per folder, it'll create one within each of those folder with a simple `export {}` that you can update later.
+If you've chosen to add an index file per folder, it'll create one within each of those folders with a simple `export {}` that you can update later.
 
 If you'd like to skip the "index file" question, you can add `"addIndexFileToRootFolders": true,` to the configuration file.
 
 #### Create files
 
-![create files inquiry](./media/inquiry_create.png)
-
+**Components**
 Currently you can add either a component or a hooks file.
-When you select a component, you can opt in to create a CSS module file as well. After selecting the name and entering the location (or keeping the default), you'll end up with a new directory that has three files:
+When you select a component, you can opt in to create a styling file as well (in the examples below, CSS-modules was selected). After selecting the name and entering the location (or keeping the default), you'll end up with a new directory that has three files:
 
 ```typescript
 // Button/index.ts
@@ -101,14 +98,15 @@ const Button: React.FunctionComponent<Props> = () => {
 export default Button;
 ```
 
-And an empty CSS modules file
+And an empty style file
 
 ```typescript
 // components/Button/button.module.css
 ```
 
-If you'd like to skip the "CSS modules" question, you can add `"addCSSModulesToComponent": true,` to the configuration file.
+If found, it will also add an export statement to the index file of the parent directory.
 
+**Hooks**
 Creating a hook will give you similar behavior, except that it will not create an index file, but will only create the following:
 
 ```typescript

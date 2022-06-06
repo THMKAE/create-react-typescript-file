@@ -1,6 +1,5 @@
 import { Options } from 'prettier';
 import { Answers, QuestionCollection } from 'inquirer';
-import { pathResolver } from './utils';
 
 export const prettierConfig: Options = {
   trailingComma: 'es5',
@@ -35,6 +34,13 @@ export enum FolderNames {
   TYPES = 'types',
 }
 
+export enum StylingTypes {
+  CSS = 'CSS-modules',
+  SC = 'styled-components',
+  VE = 'vanilla-extract',
+  NONE = 'none',
+}
+
 type Dirs = {
   dirs: { [key in FolderNames]: string };
 };
@@ -42,8 +48,15 @@ type Dirs = {
 export type Config = {
   root: string;
   addIndexFileToRootFolders?: boolean;
-  addCSSModulesToComponent?: boolean;
+  addStylingFileToComponent?: boolean;
+  stylingType?: StylingTypes;
 } & Dirs;
+
+export const styleFileExtensions = {
+  'CSS-modules': '.module.css',
+  'styled-components': 'style.ts',
+  'vanilla-extract': 'style.css.ts',
+};
 
 export const defaultConfig: Config = {
   root: 'src',
@@ -76,11 +89,11 @@ export const createQuestions = (config: Config): QuestionCollection => [
   },
   {
     type: 'list',
-    name: 'addCssModule',
-    message: 'Want to add a (CSS modules) style file?',
+    name: 'addStyleFile',
+    message: 'Want to add a style file?',
     choices: [Confirm.YES, Confirm.NO],
     when: (answers: Answers) =>
-      answers.typeOfFile === TypeOfFile.COMPONENT && config.addCSSModulesToComponent === undefined,
+      answers.typeOfFile === TypeOfFile.COMPONENT && config.addStylingFileToComponent === undefined,
   },
   {
     type: 'input',
@@ -94,10 +107,10 @@ export const createQuestions = (config: Config): QuestionCollection => [
     default: (answers: Answers) => {
       const { typeOfFile } = answers;
       if (typeOfFile === TypeOfFile.COMPONENT) {
-        return pathResolver(config.root, config.dirs.components);
+        return config.dirs.components;
       }
       if (typeOfFile === TypeOfFile.HOOK) {
-        return pathResolver(config.root, config.dirs.hooks);
+        return config.dirs.hooks;
       }
     },
   },
@@ -132,5 +145,11 @@ export const setupQuestions: QuestionCollection = [
     name: 'root',
     message:
       'What is the root of your application files? (typically you\'ll use "src" for create-react-app, and "" for Next.js)',
+  },
+  {
+    type: 'list',
+    name: 'stylingFramework',
+    message: 'What type of styling framework are you using?',
+    choices: [StylingTypes.CSS, StylingTypes.SC, StylingTypes.VE, StylingTypes.NONE],
   },
 ];

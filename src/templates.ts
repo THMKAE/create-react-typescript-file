@@ -1,3 +1,5 @@
+import { generateStyleFileName } from './helpers';
+
 export const componentTemplates = (name: string) => ({
   index: `export { default } from './${name}';`,
 
@@ -14,9 +16,9 @@ export const componentTemplates = (name: string) => ({
     
         export default ${name};`,
 
-  componentWithCSSModules: (lowerCasedName: string) => `
+  componentWithStyling: (lowerCasedName: string, ext: string) => `
         import React from 'react';
-        import styles from './${lowerCasedName}.module.css';
+        import styles from './${generateStyleFileName(lowerCasedName, ext)}';
     
         type Props = React.ComponentPropsWithoutRef<'div'> & {};
     

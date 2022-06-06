@@ -1,5 +1,5 @@
 import { Answers } from 'inquirer';
-import { Config, Confirm, FolderNames } from './config';
+import { Config, Confirm, FolderNames, StylingTypes } from './config';
 import {
   generatePathValues,
   reviewParentDir,
@@ -23,10 +23,23 @@ const taskRunner = (task: ({ prettify }: TaskFunctionParams) => void) => {
   runTask(() => task({ prettify }));
 };
 
+/**
+ * Task to setup a configuration file.
+ * Depending on the user's choice it will enable or disable auto creation of styling files
+ * during component creation.
+ *
+ * @param {Answers} answers - Contains root directory and styling framework type.
+ */
 export const setupTask = (config: Config) => (answers: Answers) => {
   taskRunner(({ prettify }) => {
-    const { root } = answers;
-    const configuration: Config = { ...config, root: root };
+    const { root, stylingFramework } = answers;
+    const configuration: Config = {
+      ...config,
+      root: root,
+      ...(stylingFramework === StylingTypes.NONE
+        ? { addStylingFileToComponent: false }
+        : { stylingType: stylingFramework, addStylingFileToComponent: true }),
+    };
     createFile(
       pathResolver(process.cwd(), '.ctf-config.json'),
       prettify(JSON.stringify(configuration), true),
@@ -35,6 +48,12 @@ export const setupTask = (config: Config) => (answers: Answers) => {
   });
 };
 
+/**
+ * Task to initialize a projects directory structure.
+ * It will create all directories the user has checked in the inquirer prompt.
+ *
+ * @param {Answers} answers - Contains specified folder names and whether or not to create index files.
+ */
 export const initTask = (config: Config) => (answers: Answers) => {
   taskRunner(({ prettify }) => {
     const { folders, createIndexFiles } = answers;
@@ -50,11 +69,20 @@ export const initTask = (config: Config) => (answers: Answers) => {
   });
 };
 
+/**
+ * Task to create TS files for a new component or hook.
+ * It will review the parent and component directory, whether or not it is ready.
+ * It will then create the appropriate folders and files.
+ * And if an index file is located in the parent directory, it will add the component to it.
+ *
+ * @param {Answers} answers - Contains the type of the file (component or hook) and the name of the component,
+ * as well as the directory and if not specified, whether or not to create a styling file.
+ */
 export const createTask = (config: Config) => (answers: Answers) => {
   taskRunner(({ prettify }) => {
-    const { typeOfFile, fileName, fileDir, addCssModule } = answers;
+    const { typeOfFile, fileName, fileDir, addStyleFile } = answers;
     const { parentDir, componentDir, indexPath, filePath } = generatePathValues(
-      fileDir,
+      pathResolver(config.root, fileDir),
       fileName,
       typeOfFile
     );
@@ -67,7 +95,8 @@ export const createTask = (config: Config) => (answers: Answers) => {
       indexPath,
       filePath,
       typeOfFile,
-      config.addCSSModulesToComponent || addCssModule,
+      config.addStylingFileToComponent || addStyleFile,
+      config.stylingType,
       componentDir,
       prettify
     );

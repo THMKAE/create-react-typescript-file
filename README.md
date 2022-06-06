@@ -75,7 +75,8 @@ If you'd like to skip the "index file" question, you can add `"addIndexFileToRoo
 
 #### Create files
 
-**Components**
+##### Components
+
 Currently you can add either a component or a hooks file.
 When you select a component, you can opt in to create a styling file as well (in the examples below, CSS-modules was selected). After selecting the name and entering the location (or keeping the default), you'll end up with a new directory that has three files:
 
@@ -106,7 +107,8 @@ And an empty style file
 
 If found, it will also add an export statement to the index file of the parent directory.
 
-**Hooks**
+##### Hooks
+
 Creating a hook will give you similar behavior, except that it will not create an index file, but will only create the following:
 
 ```typescript

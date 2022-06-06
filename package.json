@@ -1,6 +1,6 @@
 {
   "name": "create-react-typescript-file",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "CLI tool to quickly create React Typescript files",
   "main": "./lib/index.js",
   "repository": {
